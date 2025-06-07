@@ -1,4 +1,4 @@
-## Email Migration Assistant
+## 邮件迁移助手
 ![shell](https://img.shields.io/badge/Shell_Script-121011?style=for-the-badge&logo=gnu-bash&logoColor=white)  
 一个安全、交互式的IMAP邮箱迁移工具，基于强大的imapsync封装，提供用户友好的命令行界面，支持试运行、源邮件删除等高级选项，确保邮箱迁移过程完全可控。
 ## 主要特性
@@ -66,8 +66,8 @@ Perform dry run? (y/n) [y]: n
 Delete source emails after migration? (y/n) [n]: y
 
 Starting migration...
-[ 2023-10-05 14:30:00 ] Syncing INBOX: 1247 messages
-[ 2023-10-05 14:32:15 ] Syncing Sent: 876 messages
+[ 2025-06-07 14:30:00 ] Syncing INBOX: 1247 messages
+[ 2025-06-07 14:32:15 ] Syncing Sent: 876 messages
 ...
 ✅ Migration completed successfully! Transferred 2.1GB across 2123 messages.
 ```
