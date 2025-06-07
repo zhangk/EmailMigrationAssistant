@@ -1,3 +1,4 @@
+English | [中文](README.md)
 ## Email Migration Assistant
 ![shell](https://img.shields.io/badge/Shell_Script-121011?style=for-the-badge&logo=gnu-bash&logoColor=white)  
 A secure, interactive IMAP email migration tool built on the powerful imapsync utility. Provides a user-friendly command-line interface with options for dry runs, source email deletion, and comprehensive migration control.
