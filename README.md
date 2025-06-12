@@ -58,11 +58,11 @@ DRY_RUN=n DELETE_SOURCE=y SKIP_FOLDER_SIZE=n \
 ```
 ## 迁移过程
 ```plaintext
-Source IMAP server (e.g., imap.gmail.com): imap.exmail.qq.com
+Source IMAP server (e.g., imap.exmail.qq.com): imap.exmail.qq.com
 Source email address: user@example.com
 Source password: **********
 
-Destination IMAP server: imap.qq.com
+Destination IMAP server (e.g., imap.qq.com): imap.qq.com
 Destination email address: newuser@domain.com
 Destination password: **********
 
