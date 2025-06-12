@@ -24,48 +24,79 @@ safe_input "Destination IMAP server (e.g., imap.qq.com): " HOST2
 safe_input "Destination email address: " USER2
 safe_input "Destination password: " PASS2 password
 
-# 构建imapsync命令
-CMD="imapsync \\
-  --host1 \"$HOST1\" --user1 \"$USER1\" --password1 \"$PASS1\" \\
-  --host2 \"$HOST2\" --user2 \"$USER2\" --password2 \"$PASS2\" \\
-  --automap --syncinternaldates"
-
 # 关键选项选择
 safe_input "Perform dry run? (y/n) [y]: " DRY_RUN
 DRY_RUN=${DRY_RUN:-y}
 
+safe_input "Delete source emails after migration? (y/n) [n]: " DELETE_SOURCE
+DELETE_SOURCE=${DELETE_SOURCE:-n}
+
+safe_input "Skip folder size calculation? (y/n) [y]: " SKIP_FOLDER_SIZE
+SKIP_FOLDER_SIZE=${SKIP_FOLDER_SIZE:-y}
+
+# 构建imapsync命令（显示版本）
+CMD_DISPLAY="imapsync \\
+  --host1 \"$HOST1\" --user1 \"$USER1\" --password1 \"******\" \\
+  --host2 \"$HOST2\" --user2 \"$USER2\" --password2 \"******\" \\
+  --automap --syncinternaldates"
+
+# 构建实际执行命令（包含真实密码）
+CMD_EXEC="imapsync \\
+  --host1 \"$HOST1\" --user1 \"$USER1\" --password1 \"$PASS1\" \\
+  --host2 \"$HOST2\" --user2 \"$USER2\" --password2 \"$PASS2\" \\
+  --automap --syncinternaldates"
+
 # 添加选项
 if [[ "$DRY_RUN" =~ ^[Yy]$ ]]; then
-    CMD+=" --dry"
+    CMD_DISPLAY+=" --dry"
+    CMD_EXEC+=" --dry"
     echo "⚠️  DRY RUN MODE: No actual changes will be made"
-else
-    safe_input "Delete source emails after migration? (y/n) [n]: " DELETE_SOURCE
-    DELETE_SOURCE=${DELETE_SOURCE:-n}
-    if [[ "$DELETE_SOURCE" =~ ^[Yy]$ ]]; then
-        CMD+=" --delete1"
-        CMD+=" --expunge1"
-        echo "⚠️  WARNING: Source emails will be DELETED after migration!"
-    fi
+fi
+
+if [[ "$DELETE_SOURCE" =~ ^[Yy]$ ]]; then
+    CMD_DISPLAY+=" --delete1"
+    CMD_DISPLAY+=" --expunge1"
+    CMD_EXEC+=" --delete1"
+    CMD_EXEC+=" --expunge1"
+    echo "⚠️  WARNING: Source emails will be DELETED after migration!"
+fi
+
+if [[ "$SKIP_FOLDER_SIZE" =~ ^[Yy]$ ]]; then
+    CMD_DISPLAY+=" --nofoldersizes"
+    CMD_EXEC+=" --nofoldersizes"
 fi
 
 # 添加其他常用选项
-CMD+=" --exclude \"Deleted Messages|Drafts|Junk\""
-CMD+=" --maxsize 50000000"  # 跳过大于50MB的邮件
-CMD+=" --useuid"
-CMD+=" --nofoldersizes"
-CMD+=" --nofoldersizesatend"
-CMD+=" --nochecknoabletosearch"
+CMD_DISPLAY+=" --exclude \"Deleted Messages|Drafts|Junk\""
+CMD_DISPLAY+=" --maxsize 50000000"
+CMD_DISPLAY+=" --useuid"
+CMD_EXEC+=" --exclude \"Deleted Messages|Drafts|Junk\""
+CMD_EXEC+=" --maxsize 50000000"
+CMD_EXEC+=" --useuid"
+
+# 确认执行
+echo -e "\n===== Final Command (passwords hidden) ====="
+echo "$CMD_DISPLAY"
+echo "============================================"
+
+safe_input "Execute migration now? (y/n) [y]: " CONFIRM_EXECUTE
+CONFIRM_EXECUTE=${CONFIRM_EXECUTE:-y}
 
 # 执行迁移
-echo "Starting migration..."
-eval "$CMD"
-MIGRATION_RESULT=$?
+if [[ "$CONFIRM_EXECUTE" =~ ^[Yy]$ ]]; then
+    echo "Starting migration..."
+    eval "$CMD_EXEC"
+    MIGRATION_RESULT=$?
 
-if [[ $MIGRATION_RESULT -eq 0 ]]; then
-    echo -e "\n✅ Migration completed successfully!"
+    if [[ $MIGRATION_RESULT -eq 0 ]]; then
+        echo -e "\n✅ Migration completed successfully!"
+    else
+        echo -e "\n❌ Migration failed with error code $MIGRATION_RESULT"
+    fi
 else
-    echo -e "\n❌ Migration failed with error code $MIGRATION_RESULT"
+    echo "Migration canceled by user."
 fi
 
 # 安全清理
-unset PASS1 PASS2
+unset PASS1 PASS2 CMD_EXEC
+echo "Passwords cleared from memory."
