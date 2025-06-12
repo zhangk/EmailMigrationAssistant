@@ -10,6 +10,7 @@
 ### 🛡️ 可控迁移
 - 支持试运行（dry run）模式
 - 可选的源邮件删除功能
+- 迁移前二次确认
 ### ⚡ 高效智能
 - 自动文件夹映射（--automap）
 - 跳过垃圾邮件文件夹
@@ -46,10 +47,13 @@ chmod +x email_migration.sh
 #### 3. 配置迁移选项
 *  是否启用试运行（默认：是）
 *  是否迁移后删除源邮件（默认：否）
+#### 4. 确认并执行
+*  查看生成的完整命令
+*  最终确认后开始迁移
 ### 命令行选项（高级）
 ```bash
 # 非交互式模式（不推荐，仅用于测试）
-DRY_RUN=n DELETE_SOURCE=y \
+DRY_RUN=n DELETE_SOURCE=y SKIP_FOLDER_SIZE=n \
 ./email_migration.sh
 ```
 ## 迁移过程
@@ -79,6 +83,7 @@ Starting migration...
 ### 2. 危险操作保护
 *  删除源邮件需要明确确认
 *  试运行模式默认开启
+*  关键操作前提供二次确认
 ### 3. 双因素认证账户
 ```plaintext
 对于启用2FA的邮箱（如Gmail）：
