@@ -10,10 +10,12 @@ A secure, interactive IMAP email migration tool built on the powerful imapsync u
 ### 🛡️ Controlled Migration
 *  Dry run simulation mode
 *  Optional source email deletion
+*  Pre-execution confirmation
 ### ⚡ Efficient & Smart
 *  Automatic folder mapping (--automap)
 *  Junk/Drafts folder exclusion
 *  Large file filtering (>50MB by default)
+*  Folder size calculation optimization
 ### 📝 Comprehensive Logging
 *  Detailed operation records
 *  Error handling with retry mechanism
@@ -45,19 +47,23 @@ chmod +x email_migration.sh
 #### 3. Configure migration options
 *  Enable dry run (default: yes)
 *  Delete source emails after migration (default: no)
+*  Skip folder size calculation (default: yes)
+#### 4. Confirm and execute
+*  Review generated command
+*  Final confirmation before migration
 ### Command-Line Options (Advanced)
 ```bash
 # Non-interactive mode (testing only - NOT recommended)
-DRY_RUN=n DELETE_SOURCE=y \
+DRY_RUN=n DELETE_SOURCE=y SKIP_FOLDER_SIZE=n \
 ./email_migration.sh
 ```
 ## Migration Process Demo
 ```plaintext
-Source IMAP server (e.g., imap.gmail.com): imap.gmail.com
+Source IMAP server (e.g., imap.exmail.qq.com): imap.gmail.com
 Source email address: user@example.com
 Source password: **********
 
-Destination IMAP server: outlook.office365.com
+Destination IMAP server (e.g., imap.qq.com): outlook.office365.com
 Destination email address: newuser@domain.com
 Destination password: **********
 
@@ -65,16 +71,20 @@ Perform dry run? (y/n) [y]: n
 Delete source emails after migration? (y/n) [n]: y
 Skip folder size calculation? (y/n) [y]: y
 
-===== Final Command =====
-imapsync --host1 "imap.gmail.com" --user1 "user@example.com" ...
-==========================
+===== Final Command (passwords hidden) =====
+imapsync --host1 "imap.gmail.com" --user1 "user@example.com" --password1 "******" \
+  --host2 "outlook.office365.com" --user2 "newuser@domain.com" --password2 "******" \
+  --automap --syncinternaldates --delete1 --nofoldersizes \
+  --exclude "(?i)spam|trash|junk" --maxsize 50000000
+imapsync \
+  --host1 "imap.gmail.com" --user1 "user@example.com" --password1 "******" \
+  --host2 "outlook.office365.com" --user2 "newuser@domain.com" --password2 "******" \
+  --automap --syncinternaldates --nofoldersizes --exclude "Deleted Messages|Drafts|Junk" --maxsize 50000000 --useuid
+============================================
 Execute migration now? (y/n) [y]: y
 
 Starting migration...
-[ 2025-06-07 14:30:00 ] Syncing INBOX: 1247 messages
-[ 2025-06-07 14:32:15 ] Syncing Sent: 876 messages
-...
-✅ Migration completed successfully! Transferred 2.1GB across 2123 messages.
+[imapsync output...]
 ```
 ## Security Considerations
 ### 1. Password Security
@@ -84,6 +94,7 @@ Starting migration...
 ### 2. Dangerous Operation Protection
 *  Source deletion requires explicit confirmation
 *  Dry run mode enabled by default
+*  Secondary confirmation for critical actions
 ### 3. Two-Factor Authentication Accounts
 ```plaintext
 For 2FA-enabled accounts (e.g., Gmail):
