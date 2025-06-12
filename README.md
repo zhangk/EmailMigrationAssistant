@@ -58,22 +58,32 @@ DRY_RUN=n DELETE_SOURCE=y SKIP_FOLDER_SIZE=n \
 ```
 ## 迁移过程
 ```plaintext
-Source IMAP server (e.g., imap.exmail.qq.com): imap.exmail.qq.com
+Source IMAP server (e.g., imap.gmail.com): imap.exmail.qq.com
 Source email address: user@example.com
 Source password: **********
 
-Destination IMAP server (e.g., imap.qq.com): imap.qq.com
+Destination IMAP server: imap.qq.com
 Destination email address: newuser@domain.com
 Destination password: **********
 
 Perform dry run? (y/n) [y]: n
 Delete source emails after migration? (y/n) [n]: y
+Skip folder size calculation? (y/n) [y]: y
+
+===== Final Command (passwords hidden) =====
+imapsync --host1 "imap.exmail.qq.com" --user1 "user@example.com" --password1 "******" \
+  --host2 "imap.qq.com" --user2 "newuser@domain.com" --password2 "******" \
+  --automap --syncinternaldates --delete1 --nofoldersizes \
+  --exclude "(?i)spam|trash|junk" --maxsize 50000000
+imapsync \
+  --host1 "imap.exmail.qq.com" --user1 "user@example.com" --password1 "******" \
+  --host2 "imap.qq.com" --user2 "newuser@domain.com" --password2 "******" \
+  --automap --syncinternaldates --nofoldersizes --exclude "Deleted Messages|Drafts|Junk" --maxsize 50000000 --useuid
+============================================
+Execute migration now? (y/n) [y]: y
 
 Starting migration...
-[ 2025-06-07 14:30:00 ] Syncing INBOX: 1247 messages
-[ 2025-06-07 14:32:15 ] Syncing Sent: 876 messages
-...
-✅ Migration completed successfully! Transferred 2.1GB across 2123 messages.
+[imapsync output...]
 ```
 ## 安全注意事项
 ### 1. 密码安全
